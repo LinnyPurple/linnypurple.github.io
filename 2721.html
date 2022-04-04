@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>COMP 2721 Test</title>
+        <meta charset="utf-8">
+        <script type="text/javascript">
+            function getBaseLog(x, y) {
+                return Math.log(x) / Math.log(y);
+            }
+
+            function getBitByte(size) {
+                var byteSelection = document.getElementById(size).value;
+                if (byteSelection === "Bit") return 8;
+                else if (byteSelection === "Byte") return 1;
+            }
+
+            function getByteSize(size) {
+                var byteSelection = document.getElementById(size).value;
+                if (byteSelection === "Byte") return 1;
+                else if (byteSelection === "Kilo") return 10;
+                else if (byteSelection === "Mega") return 20;
+                else if (byteSelection === "Giga") return 30;
+            }
+
+            function f() {
+                // Gets all the values as integers
+                // Main memory variables
+                var cellsPerWord = parseInt(document.getElementById("cellsPerWord").value);
+                var bytesPerWord = parseInt(document.getElementById("bytesPerWord").value) / getBitByte("byte1");
+                var addressLength = parseInt(document.getElementById("addressLength").value);
+                var totalMemory = parseInt(document.getElementById("totalMemory").value) * Math.pow(2, getByteSize("size1"));
+                // Cache variables
+                var wordsPerLine = parseInt(document.getElementById("wordsPerLine").value);
+                var bytesPerLine = parseInt(document.getElementById("bytesPerLine").value) / getBitByte("byte2");
+                var totalLines = parseInt(document.getElementById("totalLines").value);
+                var totalCache = parseInt(document.getElementById("totalCache").value) * Math.pow(2, getByteSize("size2"));
+
+                // Initialize the tag, line, and word variables
+                var tag, line, word;
+
+                // Calculation time
+                // Logic: check if any of the variables are null. If so, try using other variables to get it.
+                // Goes through this twice so all values can be hit.
+                for (var i = 0; i < 3; i++) {
+                    if (!bytesPerWord && addressLength && totalMemory) bytesPerWord = totalMemory / Math.pow(2, addressLength);
+                    if (!bytesPerWord && wordsPerLine && bytesPerLine) bytesPerWord = bytesPerLine / wordsPerLine;
+                    if (!totalMemory && addressLength && bytesPerWord) totalMemory = Math.pow(2, addressLength) * bytesPerWord;
+                    if (!wordsPerLine && totalLines && totalCache) wordsPerLine = totalCache / totalLines;
+                    if (!bytesPerLine && totalCache && totalLines) bytesPerLine = totalCache / totalLines;
+                    if (!bytesPerLine && bytesPerWord && wordsPerLine) bytesPerLine = bytesPerWord * wordsPerLine;
+                    if (!totalLines && bytesPerLine && totalCache) totalLines = totalCache / bytesPerLine;
+                    if (!totalCache && bytesPerLine && totalLines) totalCache = Math.pow(2, getBaseLog(bytesPerLine, 2) + getBaseLog(totalLines, 2));
+                    console.log(cellsPerWord, bytesPerWord, addressLength, totalMemory, wordsPerLine, bytesPerLine, totalLines, totalCache);
+                }
+
+                tag = getBaseLog(totalMemory / totalCache, 2);
+                line = getBaseLog(totalLines, 2);
+                word = getBaseLog(bytesPerLine / bytesPerWord, 2);
+
+                // Print the results
+                document.getElementById("result").innerHTML = "";
+                document.getElementById("result").innerHTML += "Tag: " + tag + "<br>";
+                document.getElementById("result").innerHTML += "Line: " + line + "<br>";
+                document.getElementById("result").innerHTML += "Word: " + word;
+            }
+        </script>
+    </head>
+    <body>
+        <h1>COMP 2721 MM/Cache Checker</h1>
+        To remember:<br>
+        1 byte = 8 bits<br>
+        <i>2<sup>x</sup></i> kB = <i>2<sup>10+x</sup></i> bytes<br>
+        <i>2<sup>x</sup></i> MB = <i>2<sup>20+x</sup></i> bytes<br>
+        <i>2<sup>x</sup></i> GB = <i>2<sup>30+x</sup></i> bytes<br>
+        <h2>Main Memory</h2>
+        Cells per word:<br><input id="cellsPerWord">
+        <br><br>
+        Bits/bytes per word:<br><input id="bytesPerWord">
+        <select name="byte1" id="byte1">
+            <option value="Bit">b</option>
+            <option value="Byte">B</option>
+        </select>
+        <br><br>
+        Address length (x-bit address):<br><input id="addressLength">
+        <br><br>
+        Total memory:<br><input id="totalMemory">
+        <select name="size1" id="size1">
+            <option value="Byte">B</option>
+            <option value="Kilo">kB</option>
+            <option value="Mega">MB</option>
+            <option value="Giga">GB</option>
+        </select>
+        <br>
+        <h2>Cache</h2>
+        Words per line:<br><input id="wordsPerLine">
+        <br><br>
+        Bits/bytes per line:<br><input id="bytesPerLine">
+        <select name="byte2" id="byte2">
+            <option value="Bit">b</option>
+            <option value="Byte">B</option>
+        </select>
+        <br><br>
+        Total lines:<br><input id="totalLines">
+        <br><br>
+        Total cache:<br><input id="totalCache">
+        <select name="size2" id="size2">
+            <option value="Byte">B</option>
+            <option value="Kilo">kB</option>
+            <option value="Mega">MB</option>
+            <option value="Giga">GB</option>
+        </select>
+        <br><br>
+        <button onclick="f()">CLICK ME!!!</button>
+        <br>
+        <p id="result"></p>
+    </body>
+</html>
