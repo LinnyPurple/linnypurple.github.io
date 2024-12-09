@@ -59,12 +59,25 @@ function checkUserConfig() {
 function generateContestantsInput(numContestants) {
     // const contestantsDiv = document.getElementById("contestantsConfig");
     const contestantsTable = document.createElement("table");
+    const genders = ["Female", "Male", "None"];
     for (i = 0; i < numContestants; i++) {
         var row = contestantsTable.insertRow();
+
+        // Column 0: Says "Contestant #(i+1)" (C_i)
         var cellName = row.insertCell(0);
-        cellName.innerHTML = `Contestant # ${(i + 1)}`;
+        cellName.innerHTML = `Contestant #${(i + 1)}`;
+
+        // Column 1: Name input for C_i
         var cellNameInput = row.insertCell(1);
         cellNameInput.innerHTML = `Name: <input type="text">`;
+        
+        // Column 2: Gender input for C_i
+        var cellGenderInput = row.insertCell(2);
+        var cellGenderHTML = `<select>`;
+        for (gender of genders) {
+            cellGenderHTML += `<option value="${gender}">${gender}</option>`;
+        }
+        cellGenderInput.innerHTML = `Gender: ${cellGenderHTML}</select>`;
     }
     document.getElementById("contestantsConfig").appendChild(contestantsTable);
 }
